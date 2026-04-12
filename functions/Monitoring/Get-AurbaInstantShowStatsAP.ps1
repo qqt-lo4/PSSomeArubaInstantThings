@@ -38,7 +38,7 @@ function Get-AurbaInstantShowStatsAP {
         [switch]$OnlyAPList
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
+        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
         $sCommand = "show stats ap $IP"
     }
     Process {

@@ -43,6 +43,8 @@
     .NOTES
         Author  : Loïc Ade
         Version : 1.0.0
+
+        Required Modules : PSSomeAPIThings (Invoke-IgnoreSSL)
     #>
     Param(
         [Parameter(Position = 0)]

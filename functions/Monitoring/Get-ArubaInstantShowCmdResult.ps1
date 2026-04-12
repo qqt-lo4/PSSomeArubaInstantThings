@@ -34,15 +34,33 @@ function Get-ArubaInstantShowCmdResult {
         [object]$ArubaInstantAPI,
         [Parameter(Mandatory, Position = 0)]
         [string]$cmd,
-        [string]$iap_ip_addr
+        [AllowNull()]
+        [string]$iap_ip_addr,
+        [switch]$ReturnResult
     )
     Begin {
         $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
-        $hParam = Get-FunctionParameters -RemoveParam "ArubaInstantAPI"
-        if (-not $iap_ip_addr) { $hParam.iap_ip_addr = $oArubaInstantAPI.IPAddress }
+        $hParam = @{
+            cmd = $cmd
+        }
+        if ([string]::IsNullOrEmpty($iap_ip_addr)) {
+            $hParam.iap_ip_addr = $oArubaInstantAPI.IPAddress
+        } else {
+            $hParam.iap_ip_addr = $iap_ip_addr
+        }
     }
     Process {
         $oResult = $oArubaInstantAPI.CallAPIGet("show-cmd", $hParam)
-        return $oResult
+        if ($oResult.Status -eq "Success") {
+            if ($ReturnResult) { 
+                $oResult = $oResult.'Command output' | Remove-EmptyString
+                $oResult = $oResult.Split("`n")
+                return $oResult
+            } else {
+                return $oResult                
+            }
+        } else {
+            throw $oResult.message
+        }
     }
 }

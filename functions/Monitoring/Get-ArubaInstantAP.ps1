@@ -33,7 +33,7 @@ function Get-ArubaInstantAP {
         [string]$iap_ip_addr
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
+        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
         $oIAPIPAddr = if ($iap_ip_addr) { $iap_ip_addr } else { $oArubaInstantAPI.IPAddress }
         $hParam = @{
             cmd = "show aps"

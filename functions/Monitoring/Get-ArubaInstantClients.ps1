@@ -38,7 +38,7 @@ function Get-ArubaInstantClient {
                 [string]$iap_ip_addr
             )
             Begin {
-                $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
+                $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
                 $oIAPIPAddr = if ($iap_ip_addr) { $iap_ip_addr } else { $oArubaInstantAPI.IPAddress }
             }
             Process {
@@ -46,7 +46,7 @@ function Get-ArubaInstantClient {
             }
         }
         
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
+        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
         $oIAPIPAddr = if ($iap_ip_addr) { $iap_ip_addr } else { $oArubaInstantAPI.IPAddress }
     }
     Process {
