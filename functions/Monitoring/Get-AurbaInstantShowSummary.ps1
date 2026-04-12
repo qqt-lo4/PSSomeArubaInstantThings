@@ -10,7 +10,8 @@ function Get-AurbaInstantShowSummary {
         and system properties.
 
     .PARAMETER ArubaInstantAPI
-        The API connection object. If not specified, uses $Global:ArubaMobilityControllerAPI.
+        The API connection object. If not specified, Get-ArubaInstantShowCmdResult
+        will use $Global:ArubaInstantAPI.
 
     .OUTPUTS
         [hashtable]. Contains Lines, Properties, Clients, Networks, "Access Points",
@@ -25,17 +26,31 @@ function Get-AurbaInstantShowSummary {
         $summary."Access Points"
 
     .NOTES
-        Author  : Loïc Ade
-        Version : 1.0.0
+        Author: Loïc Ade
+        Version: 1.1.0
+        Dependencies: Select-LineRange, Convert-StringArrayToHashtable,
+                      Convert-TSVWithDashLine (PSSomeDataThings)
+
+        CHANGELOG:
+
+        Version 1.1.0 - 2026-04-12 - Loïc Ade
+            - Removed local global variable resolution (delegated to
+              Get-ArubaInstantShowCmdResult)
+
+        Version 1.0.0 - 2026-02-10 - Loïc Ade
+            - Initial release
+            - Parses "show summary" into structured data
+            - Extracts clients, networks, access points, RADIUS/RTLS servers,
+              restricted subnets, AP classes, and system properties
     #>
     Param(
         [object]$ArubaInstantAPI
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
+        $sCMD = "show summary"
     }
     Process {
-        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd "show summary"
+        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCMD
         $aLines = $oResult.'Command output'.Split("`n")
         $aClientLines = Select-LineRange -InputArray $aLines -StartRegex "^[0-9]+ Clients?$" -IncludeStartLine $true -EndRegex "^[0-9]+ Networks?$" -IncludeEndLine $false | Select-Object -Skip 2
         $aClient = Convert-TSVWithDashLine -dataArray $aClientLines -ToPSObject

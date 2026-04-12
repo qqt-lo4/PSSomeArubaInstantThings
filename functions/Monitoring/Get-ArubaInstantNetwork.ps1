@@ -75,12 +75,10 @@ function Get-ArubaInstantNetwork {
         [string]$network,
         [switch]$IncludeDetails
     )
-    Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
-    }
+    Begin { }
     Process {
         if ($network) {
-            $aLines = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd "show network $network" -iap_ip_addr $iap_ip_addr -ReturnResult
+            $aLines = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd "show network $network" -iap_ip_addr $iap_ip_addr -ReturnResult
             $aLines = $aLines[2..($aLines.Count)]
             $hProperties = @{}
             $hProperties += Select-LineRange -InputArray $aLines -EndRegex "^Role Derivation Rules$" -IncludeEndLine $false | Convert-StringArrayToHashtable
@@ -98,12 +96,12 @@ function Get-ArubaInstantNetwork {
                 "External Captive Portal Configuration" = Select-LineRange -InputArray $aLines -StartRegex "^:External Captive Portal Configuration$" -IncludeStartLine $false | Convert-StringArrayToHashtable
             } 
         } else {
-            $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd "show network" -iap_ip_addr $iap_ip_addr -ReturnResult
+            $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd "show network" -iap_ip_addr $iap_ip_addr -ReturnResult
             $oResult = $oResult[4..($oResult.Count)]
             $aResult = Convert-TSVWithDashLine $oResult
             if ($IncludeDetails) {
                 foreach ($oNetwork in $aResult) {
-                    $oNetwork.Details = Get-ArubaInstantNetwork -ArubaInstantAPI $oArubaInstantAPI -iap_ip_addr $iap_ip_addr -network $oNetwork."Profile Name"
+                    $oNetwork.Details = Get-ArubaInstantNetwork -ArubaInstantAPI $ArubaInstantAPI -iap_ip_addr $iap_ip_addr -network $oNetwork."Profile Name"
                 }
             }
             return $aResult

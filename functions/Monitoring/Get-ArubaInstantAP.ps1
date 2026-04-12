@@ -34,6 +34,8 @@ function Get-ArubaInstantAP {
         Version 1.1.0 - 2026-04-12 - Loïc Ade
             - Refactored to use Get-ArubaInstantShowCmdResult -ReturnResult
               instead of direct API call and manual parsing
+            - Removed local global variable resolution (delegated to
+              Get-ArubaInstantShowCmdResult)
 
         Version 1.0.0 - 2026-02-10 - Loïc Ade
             - Initial release
@@ -45,11 +47,11 @@ function Get-ArubaInstantAP {
         [string]$iap_ip_addr
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
+        $sCMD = "show aps"
         $oWifiController = $oArubaInstantAPI.MoreInfo
     }
     Process {
-        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd "show aps" -iap_ip_addr $iap_ip_addr -ReturnResult
+        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCMD -iap_ip_addr $iap_ip_addr -ReturnResult
         $oResult = $oResult[4..($oResult.Count)]
         $aResult = Convert-TSVWithDashLine $oResult
         foreach ($oAP in $aResult) {

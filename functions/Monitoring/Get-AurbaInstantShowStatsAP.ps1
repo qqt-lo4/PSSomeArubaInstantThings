@@ -9,7 +9,8 @@ function Get-AurbaInstantShowStatsAP {
         AP list. Can optionally return only the AP list.
 
     .PARAMETER ArubaInstantAPI
-        The API connection object. If not specified, uses $Global:ArubaMobilityControllerAPI.
+        The API connection object. If not specified, Get-ArubaInstantShowCmdResult
+        will use $Global:ArubaInstantAPI.
 
     .PARAMETER IP
         The IP address of the access point to query.
@@ -28,8 +29,21 @@ function Get-AurbaInstantShowStatsAP {
         Get-AurbaInstantShowStatsAP -ArubaInstantAPI $conn -IP "192.168.1.10" -OnlyAPList
 
     .NOTES
-        Author  : Loïc Ade
-        Version : 1.0.0
+        Author: Loïc Ade
+        Version: 1.1.0
+        Dependencies: Select-LineRange, Convert-StringArrayToHashtable,
+                      Convert-TSVWithDashLine (PSSomeDataThings)
+
+        CHANGELOG:
+
+        Version 1.1.0 - 2026-04-12 - Loïc Ade
+            - Removed local global variable resolution (delegated to
+              Get-ArubaInstantShowCmdResult)
+
+        Version 1.0.0 - 2026-02-10 - Loïc Ade
+            - Initial release
+            - Parses "show stats ap" output into structured data
+            - OnlyAPList option for lightweight queries
     #>
     Param(
         [object]$ArubaInstantAPI,
@@ -38,11 +52,10 @@ function Get-AurbaInstantShowStatsAP {
         [switch]$OnlyAPList
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
         $sCommand = "show stats ap $IP"
     }
     Process {
-        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd $sCommand
+        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCommand
         $aLines = $oResult.'Command output'.Split("`n")
         if ($OnlyAPList) {
             $hResult = @{

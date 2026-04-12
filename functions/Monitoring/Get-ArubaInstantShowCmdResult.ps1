@@ -49,6 +49,9 @@ function Get-ArubaInstantShowCmdResult {
         Version 1.1.0 - 2026-04-12 - Loïc Ade
             - Added ReturnResult parameter to return cleaned command output as string array
             - Added throw on command failure (non-Success status)
+            - Fixed global variable name ($Global:ArubaInstantAPI instead of $Global:ArubaMobilityControllerAPI)
+            - ArubaInstantAPI parameter now accepts null, allowing callers to
+              pass through without resolving the global variable themselves
 
         Version 1.0.0 - 2026-02-10 - Loïc Ade
             - Initial release
@@ -56,6 +59,7 @@ function Get-ArubaInstantShowCmdResult {
             - Automatic IAP IP fallback to controller IP
     #>
     Param(
+        [AllowNull()]
         [object]$ArubaInstantAPI,
         [Parameter(Mandatory, Position = 0)]
         [string]$cmd,
@@ -64,7 +68,7 @@ function Get-ArubaInstantShowCmdResult {
         [switch]$ReturnResult
     )
     Begin {
-        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaMobilityControllerAPI }
+        $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
         $hParam = @{
             cmd = $cmd
         }
