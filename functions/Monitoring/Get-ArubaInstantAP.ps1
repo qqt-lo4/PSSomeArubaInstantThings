@@ -25,8 +25,20 @@ function Get-ArubaInstantAP {
         Get-ArubaInstantAP -ArubaInstantAPI $conn -iap_ip_addr "192.168.1.10"
 
     .NOTES
-        Author  : Loïc Ade
-        Version : 1.0.0
+        Author: Loïc Ade
+        Version: 1.1.0
+        Dependencies: Convert-TSVWithDashLine (PSSomeDataThings)
+
+        CHANGELOG:
+
+        Version 1.1.0 - 2026-04-12 - Loïc Ade
+            - Refactored to use Get-ArubaInstantShowCmdResult -ReturnResult
+              instead of direct API call and manual parsing
+
+        Version 1.0.0 - 2026-02-10 - Loïc Ade
+            - Initial release
+            - Retrieves and parses access point list from "show aps" command
+            - Adds controller information to each AP object
     #>
     Param(
         [object]$ArubaInstantAPI,
@@ -34,17 +46,10 @@ function Get-ArubaInstantAP {
     )
     Begin {
         $oArubaInstantAPI = if ($ArubaInstantAPI) { $ArubaInstantAPI } else { $Global:ArubaInstantAPI }
-        $oIAPIPAddr = if ($iap_ip_addr) { $iap_ip_addr } else { $oArubaInstantAPI.IPAddress }
-        $hParam = @{
-            cmd = "show aps"
-            iap_ip_addr = $oIAPIPAddr
-        }
         $oWifiController = $oArubaInstantAPI.MoreInfo
     }
     Process {
-        $oResult = $oArubaInstantAPI.CallAPIGet("show-cmd", $hParam)
-        $oResult = $oResult.'Command output' | Remove-EmptyString
-        $oResult = $oResult.Split("`n")
+        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $oArubaInstantAPI -cmd "show aps" -iap_ip_addr $iap_ip_addr -ReturnResult
         $oResult = $oResult[4..($oResult.Count)]
         $aResult = Convert-TSVWithDashLine $oResult
         foreach ($oAP in $aResult) {
