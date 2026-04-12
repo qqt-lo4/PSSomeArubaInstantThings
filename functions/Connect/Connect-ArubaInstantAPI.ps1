@@ -41,10 +41,26 @@
         Connect-ArubaInstantAPI -Address "controller.local" -Port 4343 -Username "admin" -Password $securePass -GlobalVar
 
     .NOTES
-        Author  : Loïc Ade
-        Version : 1.0.0
+        Author: Loïc Ade
+        Version: 1.1.0
+        Dependencies: Invoke-IgnoreSSL, Set-UseUnsafeHeaderParsing,
+                      Convert-HashtableToURLArguments (PSSomeAPIThings),
+                      Test-StringIsIP (PSSomeNetworkThings),
+                      ConvertTo-Hashtable (PSSomeDataThings)
 
-        Required Modules : PSSomeAPIThings (Invoke-IgnoreSSL)
+        CHANGELOG:
+
+        Version 1.1.0 - 2026-04-12 - Loïc Ade
+            - Added mandatory module dependency check at startup
+            - Throws with list of missing modules if any are not loaded
+
+        Version 1.0.0 - 2026-02-10 - Loïc Ade
+            - Initial release
+            - REST API connection with session management
+            - Automatic SSL certificate bypass with -ignoreSSLError
+            - Session expiration detection and automatic reconnection
+            - GET and POST/PUT API call methods
+            - Optional global variable storage with -GlobalVar
     #>
     Param(
         [Parameter(Position = 0)]
@@ -60,6 +76,22 @@
         [object]$MoreInfo,
         [switch]$GlobalVar
     )
+
+    $aAllRequiredModules = @(
+        "PSSomeAPIThings"
+        "PSSomeDataThings"
+        "PSSomeNetworkThings"
+    )
+    $aMissingModules = @()
+    foreach ($sModule in $aAllRequiredModules) {
+        $bModuleImported = $null -ne (Get-Module -Name $sModule)
+        if (-not $bModuleImported) {
+            $aMissingModules += $sModule
+        }
+    }
+    if ($aMissingModules.Count -gt 0) {
+        throw ("Missing modules: " + ($aMissingModules -join ", "))
+    }
 
     $bIsIP = Test-StringIsIP -string $Address -MaskForbidden
     $IPAddress = if ($bIsIP) {
