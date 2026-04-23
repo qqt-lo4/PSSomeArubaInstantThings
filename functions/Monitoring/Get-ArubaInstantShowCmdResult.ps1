@@ -84,6 +84,9 @@ function Get-ArubaInstantShowCmdResult {
             if ($ReturnResult) { 
                 $oResult = $oResult.'Command output' | Remove-EmptyString
                 $oResult = $oResult.Split("`n")
+                if ($oResult | Where-Object { $_ -like "COMMAND=*"} ) {
+                    $oResult = $oResult | Select-LineRange -StartRegex "^COMMAND=.+" -IncludeStartLine $false
+                }
                 return $oResult
             } else {
                 return $oResult                

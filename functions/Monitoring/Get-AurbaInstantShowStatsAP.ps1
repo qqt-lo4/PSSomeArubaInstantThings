@@ -55,8 +55,7 @@ function Get-AurbaInstantShowStatsAP {
         $sCommand = "show stats ap $IP"
     }
     Process {
-        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCommand
-        $aLines = $oResult.'Command output'.Split("`n")
+        $aLines = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCommand -ReturnResult
         if ($OnlyAPList) {
             $hResult = @{
                 Lines = $aLines
@@ -65,7 +64,7 @@ function Get-AurbaInstantShowStatsAP {
         } else {
             $hResult = @{
                 Lines = $aLines
-                Properties = Select-LineRange -InputArray $aLines -EndRegex "^Usage$" -IncludeEndLine $false | Select-Object -Skip 4 | Convert-StringArrayToHashtable
+                Properties = Select-LineRange -InputArray $aLines -EndRegex "^Usage$" -IncludeEndLine $false | Convert-StringArrayToHashtable
                 Usage = Select-LineRange -InputArray $aLines -StartRegex "^Usage$"  -IncludeStartLine $false -EndRegex "^RF Trends$"  -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
                 "RF Trends" = Select-LineRange -InputArray $aLines -StartRegex "^RF Trends$" -IncludeStartLine $false -EndRegex "^Client Heatmap$"  -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
                 "Client Heatmap" = Select-LineRange -InputArray $aLines -StartRegex "^Client Heatmap$" -IncludeStartLine $false -EndRegex "^AP List$"  -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject

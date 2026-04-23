@@ -52,7 +52,7 @@ function Get-ArubaInstantAP {
     }
     Process {
         $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCMD -iap_ip_addr $iap_ip_addr -ReturnResult
-        $oResult = $oResult[4..($oResult.Count)]
+        $oResult = $oResult[2..($oResult.Count)]
         $aResult = Convert-TSVWithDashLine $oResult
         foreach ($oAP in $aResult) {
             $oAP.Controller = $oWifiController

@@ -47,7 +47,7 @@ function Get-ArubaInstantClient {
     }
     Process {
         $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -iap_ip_addr $iap_ip_addr -cmd $sCMD -ReturnResult
-        $oResult = $oResult[4..($oResult.Count - 3)]
+        $oResult = $oResult[2..($oResult.Count - 3)]
         return Convert-TSVWithDashLine $oResult
     }
 }

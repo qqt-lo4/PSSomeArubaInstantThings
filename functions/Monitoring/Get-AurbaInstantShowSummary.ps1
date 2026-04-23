@@ -50,8 +50,7 @@ function Get-AurbaInstantShowSummary {
         $sCMD = "show summary"
     }
     Process {
-        $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCMD
-        $aLines = $oResult.'Command output'.Split("`n")
+        $aLines = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd $sCMD -ReturnResult
         $aClientLines = Select-LineRange -InputArray $aLines -StartRegex "^[0-9]+ Clients?$" -IncludeStartLine $true -EndRegex "^[0-9]+ Networks?$" -IncludeEndLine $false | Select-Object -Skip 2
         $aClient = Convert-TSVWithDashLine -dataArray $aClientLines -ToPSObject
         $aNetworkLines = Select-LineRange -InputArray $aLines -StartRegex "^[0-9]+ Networks?$" -IncludeStartLine $true -EndRegex "^[0-9]+ Access Points?$" -IncludeEndLine $false | Select-Object -Skip 2
@@ -66,7 +65,7 @@ function Get-AurbaInstantShowSummary {
         $aRTLSServers = Convert-TSVWithDashLine -dataArray $aRTLSServersLines -ToPSObject
         $aAPClassLines = Select-LineRange -InputArray $aLines -StartRegex "^[0-9]+ AP Class(es)?$" -IncludeStartLine $true -EndRegex '^\s*(.+?)\s*:\s*(.*)$' -IncludeEndLine $false | Select-Object -Skip 2
         $aAPClass = Convert-TSVWithDashLine -dataArray $aAPClassLines -ToPSObject
-        $aFirstLines = Select-LineRange -InputArray $aLines -EndRegex "^[0-9]+ Clients?$" -IncludeEndLine $false -IncludeStartLine $false | Select-Object -Skip 4
+        $aFirstLines = Select-LineRange -InputArray $aLines -EndRegex "^[0-9]+ Clients?$" -IncludeEndLine $false -IncludeStartLine $false
         $aEndLines = Select-LineRange -InputArray $aLines -StartRegex "^[0-9]+ AP Class(es)?$" | Select-Object -Skip ($aAPClass.Count + 5)
         $hProperties = $aFirstLines + $aEndLines | Convert-StringArrayToHashtable
         $hResult = @{

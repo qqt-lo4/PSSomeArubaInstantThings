@@ -86,18 +86,18 @@ function Get-ArubaInstantNetwork {
             return [ordered]@{
 #                Lines = $aLines
                 Properties = $hProperties
-                "Role Derivation Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Role Derivation Rules$" -IncludeStartLine $false -EndRegex "^Vlan Derivation Rules$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
-                "Vlan Derivation Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Vlan Derivation Rules$" -IncludeStartLine $false -EndRegex "^RADIUS Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
-                "RADIUS Servers" = Select-LineRange -InputArray $aLines -StartRegex "^RADIUS Servers$" -IncludeStartLine $false -EndRegex "^LDAP Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
-                "LDAP Servers" = Select-LineRange -InputArray $aLines -StartRegex "^LDAP Servers$" -IncludeStartLine $false -EndRegex "^Accounting Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
-                "Accounting Servers" = Select-LineRange -InputArray $aLines -StartRegex "^Accounting Servers$" -IncludeStartLine $false -EndRegex "^ACL Vlan.*" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
-                "Access Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Access Rules$" -IncludeStartLine $false -EndRegex "^:Captive Portal Configuration$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine -ToPSObject
+                "Role Derivation Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Role Derivation Rules$" -IncludeStartLine $false -EndRegex "^Vlan Derivation Rules$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
+                "Vlan Derivation Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Vlan Derivation Rules$" -IncludeStartLine $false -EndRegex "^RADIUS Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
+                "RADIUS Servers" = Select-LineRange -InputArray $aLines -StartRegex "^RADIUS Servers$" -IncludeStartLine $false -EndRegex "^LDAP Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
+                "LDAP Servers" = Select-LineRange -InputArray $aLines -StartRegex "^LDAP Servers$" -IncludeStartLine $false -EndRegex "^Accounting Servers$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
+                "Accounting Servers" = Select-LineRange -InputArray $aLines -StartRegex "^Accounting Servers$" -IncludeStartLine $false -EndRegex "^ACL Vlan.*" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
+                "Access Rules" = Select-LineRange -InputArray $aLines -StartRegex "^Access Rules$" -IncludeStartLine $false -EndRegex "^:Captive Portal Configuration$" -IncludeEndLine $false | Select-Object -Skip 1 | Convert-TSVWithDashLine
                 "Captive Portal Configuration" = Select-LineRange -InputArray $aLines -StartRegex "^:Captive Portal Configuration$" -IncludeStartLine $false -EndRegex "^:External Captive Portal Configuration$" -IncludeEndLine $false | Convert-StringArrayToHashtable
                 "External Captive Portal Configuration" = Select-LineRange -InputArray $aLines -StartRegex "^:External Captive Portal Configuration$" -IncludeStartLine $false | Convert-StringArrayToHashtable
             } 
         } else {
             $oResult = Get-ArubaInstantShowCmdResult -ArubaInstantAPI $ArubaInstantAPI -cmd "show network" -iap_ip_addr $iap_ip_addr -ReturnResult
-            $oResult = $oResult[4..($oResult.Count)]
+            $oResult = $oResult[2..($oResult.Count)]
             $aResult = Convert-TSVWithDashLine $oResult
             if ($IncludeDetails) {
                 foreach ($oNetwork in $aResult) {
